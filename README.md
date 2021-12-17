@@ -22,6 +22,7 @@ docker run -it --rm \
 Add a password in `secret.tfvars`. Then create a Postgres database in AWS RDS.
 
 ```bash
+cd deployments
 terraform apply -var-file="secret.tfvars"
 ```
 
