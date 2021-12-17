@@ -1,7 +1,7 @@
 
-name: 'jaffle_shop'
+name: 'dbt_tutorial'
 version: '0.1'
-profile: 'jaffle_shop'
+profile: 'dbt_tutorial'
 config-version: 2
 
 source-paths: ["models"]
@@ -17,7 +17,7 @@ clean-targets:
     - "logs"
 
 models:
-  jaffle_shop:
+  dbt_tutorial:
       materialized: table
       staging:
         materialized: view
