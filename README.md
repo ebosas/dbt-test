@@ -19,11 +19,17 @@ docker run -it --rm \
 
 ### On AWS
 
-Add a password in `secret.tfvars`. Then create a Postgres database in AWS RDS.
+Create an SSM parameter for the Postgres password with the name `/dbt/PostgresPassword` and type `SecureString`. Then deploy the CloudFormation stacks. First, the VPC.
 
 ```bash
 cd deployments
-terraform apply -var-file="secret.tfvars"
+aws cloudformation create-stack --stack-name db-vpc --template-body file://vpc.yaml
+```
+
+Once done, deploy the database stack.
+
+```bash
+aws cloudformation create-stack --stack-name db-postgres --template-body file://db.yaml
 ```
 
 Connect to a remote database:
@@ -32,17 +38,4 @@ Connect to a remote database:
 docker run -it --rm \
     postgres:14-alpine \
     psql -h <pg_endpoint> -p 5432 -U postgres -d dbt -W
-```
-
-### dbt
-
-Commands:
-
-```bash
-dbt debug
-dbt seed
-dbt run
-dbt test
-dbt docs generate
-dbt docs serve
 ```
