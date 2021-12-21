@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: PostgreSQL database to act as a warehouse for DBT.
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: prod
+  PostgresUsername:
+    Type: String
+    Default: postgres
+Resources:
+
+  #-----------------------------------------------------------------------------#
+  # Postgres Database
+  #-----------------------------------------------------------------------------#
+  Postgres:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      DBInstanceIdentifier: dbtpostgres
+      DBName: dbt
+      DBInstanceClass: db.t2.micro
+      StorageType: gp2
+      AllocatedStorage: 20
+      MaxAllocatedStorage: 21
+      Engine: postgres
+      EngineVersion: 12.8
+      MasterUsername: !Ref PostgresUsername
+      MasterUserPassword: "{{resolve:ssm-secure:/dbt/PostgresPassword}}"
+      MultiAZ: false
+      PubliclyAccessible: true
+      VPCSecurityGroups: [!Ref PostgresSecurityGroup]
+      DBSubnetGroupName: !Ref PostgresSubnetGroup
+
+  PostgresSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: !Sub ${EnvironmentName}-Postgres
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${EnvironmentName}:PublicSubnetOne
+        - Fn::ImportValue: !Sub ${EnvironmentName}:PublicSubnetTwo
+        
+  PostgresSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Sub ${EnvironmentName}:VpcId
+      GroupDescription: Access to Postgres
+      SecurityGroupIngress:
+        - Description: Access from anywhere
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+
+  #-----------------------------------------------------------------------------#
+  # SSM Parameter Store
+  #-----------------------------------------------------------------------------#
+
+  PostgresURLParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /dbt/PostgresUrl
+      Type: String
+      Description: A URL for Postgres db
+      Value: !GetAtt Postgres.Endpoint.Address
+  PostgresUsernameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /dbt/PostgresUsername
+      Type: String
+      Description: A username for Postgres db
+      Value: !Ref PostgresUsername

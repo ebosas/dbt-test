@@ -1,7 +1,7 @@
 
-name: 'dbt_tutorial'
+name: 'dbt_test'
 version: '0.1'
-profile: 'dbt_tutorial'
+profile: 'dbt_dev'
 config-version: 2
 
 model-paths: ["models"]
@@ -17,7 +17,7 @@ clean-targets:
   - "logs"
 
 models:
-  dbt_tutorial:
+  dbt_test:
     materialized: table
     staging:
       materialized: view
