@@ -32,6 +32,13 @@ Once done, deploy the database stack.
 aws cloudformation create-stack --stack-name db-postgres --template-body file://db.yaml
 ```
 
+Seed the database:
+
+```bash
+export DBT_PASSWORD="<pg_password>"
+dbt seed --profiles-dir ./ --profile dbt_dev
+```
+
 Connect to a remote database:
 
 ```bash
