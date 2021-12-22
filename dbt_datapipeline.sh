@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "[dbt command] debug"
+echo "[DBT command] debug"
 dbt debug --profiles-dir ./ --profile dbt_dev
 
-echo "[dbt command] run"
+echo "[DBT command] run"
 dbt run --profiles-dir ./ --profile dbt_dev
