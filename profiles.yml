@@ -32,3 +32,16 @@ dbt_prod:
       dbname: dbt
       schema: dbt_prod
       threads: 1
+
+dbt_local:
+  target: default
+  outputs:
+    default:
+      type: postgres
+      host: localhost
+      user: postgres
+      password: demopsw
+      port: 5432
+      dbname: dbt
+      schema: dbt_prod
+      threads: 4
